@@ -28,9 +28,11 @@ const SendData = async() => {
         // parse into rows
         const rows = csvText.split('\n').map(row => row.split(','));
         rows.forEach(row => {
+        // Remove quotes from the beginning and end of the URL if present
+        const cleanUrl = row[0] ? row[0].replace(/^["']/, '').replace(/["']$/, '') : '';
             const div=document.createElement('div');
             const image=document.createElement('img');
-            image.src=row; 
+            image.src=cleanUrl; 
             div.appendChild(image);
 
             topDiv.appendChild(div);
