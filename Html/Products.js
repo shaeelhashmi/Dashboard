@@ -29,6 +29,11 @@ const SendData = async() => {
         // parse into rows
         const rows = csvText.split('\n').map(row => row.split(','));
         rows.forEach(row => {
+            console.log('Processing row:', row[0].trim());
+           if(!row[0] || row[0].trim() === 'urls' || row[0].trim() === '') {
+        console.log('Skipping:', row[0]);
+        return;
+    }
         // Remove quotes from the beginning and end of the URL if present
         const cleanUrl = row[0] ? row[0].replace(/^["']/, '').replace(/["']$/, '') : '';
             const div=document.createElement('div');
