@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .mar{
+        margin-left: 20px;
+    }
+    .grid{
+        display: grid;
+        grid-template-columns: 1fr auto;
+        width: 300px;
+        gap: 20px;
+    }
+    .colSpan2{
+        grid-column: span 2;
+    }
+    .scaledZero{
+        display: none;
+    }
+    button{
+        background-color: transparent;
+        padding: 2px;
+        width: 100px;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+<body>
+    <div>
+    <div class="grid">
+    
+    <h1>Male</h1>
+    <button id="MaleBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    </div>
+    <div id="internalDivMale"></div>
+    </div>
+    <div>
+    <h1>Female</h1>
+    <button id="FemaleBtn">Submit</button>
+    <div id="internalDivFemale"></div>
+    </div>
+</body>
+<script src="./New.js"></script>
+</html>
