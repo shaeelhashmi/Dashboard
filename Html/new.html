@@ -28,9 +28,18 @@
         border: none;
         cursor: pointer;
     }
+    .outergrid{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 20px;
+        height: 100vh;
+        margin-top: 40px;
+    }
 </style>
 <body>
-    <div>
+    <div class="outergrid">
+    <div >
     <div class="grid">
     
     <h1>Male</h1>
@@ -40,12 +49,15 @@
     </div>
     <div id="internalDivMale"></div>
     </div>
-    <div class="grid">
+    <div >
+        <div class="grid">
     <h1>Female</h1>
     <button id="FemaleBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
     </button>
+    </div>
     <div id="internalDivFemale"></div>
+    </div>
     </div>
 </body>
 <script src="./New.js"></script>
