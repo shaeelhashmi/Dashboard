@@ -10,6 +10,7 @@ const checkIfLists = (data) => {
 }
 
 const DisplayList = (list, key, gender,prev) => {
+    console.log(prev);
     const element = document.getElementById(key);
     let divForList = document.createElement('div');
     divForList.classList.add('colSpan2');
