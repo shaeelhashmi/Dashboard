@@ -1,12 +1,40 @@
 package main
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 )
+
+type RequestData struct {
+	Parent_item string `json:"sub_item"`
+	Gender      string `json:"gender"`
+	RealItem    string `json:"item"`
+}
+
+func sanitize(name string) string {
+	// convert spaces to underscores
+	name = strings.ReplaceAll(name, " ", "_")
+
+	// allow only letters, numbers, underscore, dash
+	re := regexp.MustCompile(`[^a-zA-Z0-9_-]+`)
+	name = re.ReplaceAllString(name, "_")
+
+	return name
+}
+func makeFileName(req RequestData) string {
+	parent := sanitize(req.Parent_item)
+	gender := sanitize(req.Gender)
+
+	// Example: Male_Shoes.csv
+	return fmt.Sprintf("%s_%s", gender, parent)
+}
 
 // CORS middleware
 func corsMiddleware(next http.Handler) http.Handler {
@@ -39,9 +67,6 @@ func main() {
 	male := categories["Male"]
 	female := categories["Female"]
 
-	fmt.Println("Loaded Male:", male)
-	fmt.Println("Loaded Female:", female)
-
 	mux := http.NewServeMux()
 
 	// Serve all static files from ./Html
@@ -51,8 +76,47 @@ func main() {
 	mux.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./Html/new.html")
 	})
+	mux.HandleFunc("/data/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./Html/Products.html")
+	})
+	mux.HandleFunc("/get/items", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
 
-	// Serve all other static files (JS, CSS, images) from ./Html
+		data, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Error reading request body", http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+
+		fmt.Println("Received data:", string(data))
+
+		var reqData RequestData
+		if err := json.Unmarshal(data, &reqData); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		fileName := makeFileName(reqData)
+		csv_data, err := os.ReadFile("../output/" + fileName + "/" + reqData.RealItem + ".csv")
+		if err != nil {
+			http.Error(w, "Error reading CSV file: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		reader := csv.NewReader(strings.NewReader(string(csv_data)))
+		records, err := reader.ReadAll()
+		if err != nil {
+			http.Error(w, "Error parsing CSV: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Println(records)
+
+		w.Header().Set("Content-Type", "text/csv")
+		w.Write(csv_data)
+	})
 
 	// API endpoints
 	mux.HandleFunc("/categories/male", func(w http.ResponseWriter, r *http.Request) {

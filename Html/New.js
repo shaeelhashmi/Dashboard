@@ -8,25 +8,25 @@ let functionCalledFemale = false;
 const checkIfLists = (data) => {
     return typeof data === 'object' && !Array.isArray(data) && data !== null;
 }
-
-const DisplayList = (list, key, gender,prev) => {
+const DisplayList = (list, key, gender, prev) => {
     console.log(prev);
     const element = document.getElementById(key);
     let divForList = document.createElement('div');
     divForList.classList.add('colSpan2');
-    divForList.id = `divForList${gender}` + key;
+    divForList.id = `divForList${gender}${key}`;
     element.appendChild(divForList);
 
     list.forEach((item) => {
         let div = document.createElement('div');
-        let button = document.createElement('button');
+        let button = document.createElement('a');
         let paragraph = document.createElement('p');
-        div.classList.add('mar');
-        div.classList.add('grid');
+        div.classList.add('mar', 'grid');
         button.textContent = 'Submit';
-        button.id = `submitButton${gender}List` + item;
+        button.id = `submitButton${gender}List${sanitizeKeys(item)}`;
+
+        button.href = `/data/?sub_item=${sanitizeKeys(prev)}&item=${sanitizeKeys(item)}&gender=${gender}`;
         paragraph.textContent = item;
-        paragraph.id = item;
+        paragraph.id = `${gender}${sanitizeKeys(item)}`;
         div.appendChild(paragraph);
         div.appendChild(button);
         divForList.appendChild(div);
@@ -37,7 +37,7 @@ const readDataInsideInside = (data, key, gender) => {
     const element = document.getElementById(key);
     let divForInside = document.createElement('div');
     divForInside.classList.add('colSpan2');
-    divForInside.id = `internalDiv${gender}Inside` + key;
+    divForInside.id = `internalDiv${gender}Inside${key}`;
 
     Object.keys(data).forEach((keyInside) => {
         let sanitizedKeyInside = sanitizeKeys(keyInside);
@@ -52,16 +52,15 @@ const readDataInsideInside = (data, key, gender) => {
                 <path d="m6 9 6 6 6-6"/>
            </svg>
         `;
-        submitButton.id = `submitButton${gender}Inside` + sanitizedKeyInside;
+        submitButton.id = `submitButton${gender}Inside${sanitizedKeyInside}`;
 
         let div = document.createElement('div');
-        div.classList.add('grid');
-        div.classList.add('mar');
-        div.id = `divInside${sanitizedKeyInside}`;
+        div.classList.add('grid', 'mar');
+        div.id = `${gender}divInside${sanitizedKeyInside}`;
 
         let paragraph = document.createElement('p');
         paragraph.textContent = keyInside.trim();
-        paragraph.id = sanitizedKeyInside;
+        paragraph.id = `${gender}${sanitizedKeyInside}`;
         div.appendChild(paragraph);
         div.appendChild(submitButton);
         divForInside.appendChild(div);
@@ -70,21 +69,21 @@ const readDataInsideInside = (data, key, gender) => {
 
         if (!checkIfLists(data[keyInside])) {
             submitButton.addEventListener('click', () => {
-                let existingDiv = document.getElementById(`divForList${gender}` + 'divInside' + sanitizedKeyInside);
+                let existingDiv = document.getElementById(`divForList${gender}${gender}divInside${sanitizedKeyInside}`);
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                DisplayList(data[keyInside], 'divInside' + sanitizedKeyInside, gender, keyInside);
+                DisplayList(data[keyInside], `${gender}divInside${sanitizedKeyInside}`, gender, keyInside);
             });
         } else {
             submitButton.addEventListener('click', () => {
-                let existingDiv = document.getElementById(`internalDiv${gender}Inside` + 'divInside' + sanitizedKeyInside);
+                let existingDiv = document.getElementById(`internalDiv${gender}Inside${gender}divInside${sanitizedKeyInside}`);
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                readDataInsideInside(data[keyInside], 'divInside' + sanitizedKeyInside, gender);
+                readDataInsideInside(data[keyInside], `${gender}divInside${sanitizedKeyInside}`, gender);
             });
         }
     });
@@ -98,13 +97,12 @@ const readDataInside = (data, gender) => {
         let sanitizedKey = sanitizeKeys(key);
 
         let div = document.createElement('div');
-        div.classList.add('mar');
-        div.classList.add('grid');
-        div.id = 'div' + sanitizedKey;
+        div.classList.add('mar', 'grid');
+        div.id = `${gender}div${sanitizedKey}`;
 
         let paragraph = document.createElement('p');
         paragraph.textContent = key.trim();
-        paragraph.id = sanitizedKey;
+        paragraph.id = `${gender}${sanitizedKey}`;
 
         let submitButton = document.createElement('button');
         submitButton.innerHTML = `
@@ -116,7 +114,7 @@ const readDataInside = (data, gender) => {
                 <path d="m6 9 6 6 6-6"/>
            </svg>
         `;
-        submitButton.id = `submitButton${gender}` + sanitizedKey;
+        submitButton.id = `submitButton${gender}${sanitizedKey}`;
 
         div.appendChild(paragraph);
         div.appendChild(submitButton);
@@ -124,27 +122,28 @@ const readDataInside = (data, gender) => {
 
         if (!checkIfLists(data[key])) {
             submitButton.addEventListener('click', () => {
-                let existingDiv = document.getElementById(`divForList${gender}` + 'div' + sanitizedKey);
+                let existingDiv = document.getElementById(`divForList${gender}${gender}div${sanitizedKey}`);
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                DisplayList(data[key], 'div' + sanitizedKey, gender, key);
+                DisplayList(data[key], `${gender}div${sanitizedKey}`, gender, key);
             });
         } else {
             submitButton.addEventListener('click', () => {
-                let existingDiv = document.getElementById(`internalDiv${gender}Inside` + 'div' + sanitizedKey);
+                let existingDiv = document.getElementById(`internalDiv${gender}Inside${gender}div${sanitizedKey}`);
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                readDataInsideInside(data[key], 'div' + sanitizedKey, gender);
+                readDataInsideInside(data[key], `${gender}div${sanitizedKey}`, gender);
             });
         }
 
         data2.push(data[key]);
     });
 }
+
 
 const sanitizeKeys = (key) => {
     key=key.trim();
