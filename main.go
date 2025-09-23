@@ -1,5 +1,11 @@
 package main
 
+// TODO
+/*
+If no csv for a product exists the button should show no products exists or is diabled
+Toasts for the user to see progress
+
+*/
 import (
 	"encoding/csv"
 	"encoding/json"
