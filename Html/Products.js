@@ -68,22 +68,27 @@ const SendData = async() => {
 }
 SendData();
  document.getElementById("downloadBtn").addEventListener("click", () => {
-    if (checkedItems.length === 0) {
-        alert("No items selected!");
+    if (checkedItems.length <= 100) {
+        alert("Select at least 100 items to download!");
         return;
     }
-
-    // Turn checked items into CSV string
-    const csvContent = "data:text/csv;charset=utf-8," + checkedItems.join("\n");
-
-    // Encode as URI
-    const encodedUri = encodeURI(csvContent);
-
-    // Create hidden link and trigger download
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "checked_urls.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const cleanedItems = checkedItems.map(url => url.trim()); 
+    const sendData={items:cleanedItems,sub_item:queryValue,item:secondQueryValue,gender:gender};
+    console.log(cleanedItems)
+    const stringiFied=JSON.stringify(sendData);
+    console.log(stringiFied);
+    try{
+       fetch('/save/image',{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+       body: JSON.stringify(sendData)
+    })
+    }
+    catch(error){
+        console.error('Error:', error);
+        alert("Error in downloading images");
+    }
+    
 });

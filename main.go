@@ -10,6 +10,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type RequestData struct {
@@ -79,6 +80,7 @@ func main() {
 	mux.HandleFunc("/data/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./Html/Products.html")
 	})
+	// API endpoints
 	mux.HandleFunc("/get/items", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -106,19 +108,87 @@ func main() {
 			http.Error(w, "Error reading CSV file: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		reader := csv.NewReader(strings.NewReader(string(csv_data)))
-		records, err := reader.ReadAll()
-		if err != nil {
-			http.Error(w, "Error parsing CSV: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		fmt.Println(records)
 
 		w.Header().Set("Content-Type", "text/csv")
 		w.Write(csv_data)
 	})
+	mux.HandleFunc("/save/image", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Received request to /save/image")
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		data, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Error reading request body", http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+		type RequestData2 struct {
+			Items   []string `json:"items"`
+			SubItem string   `json:"sub_item"`
+			Item    string   `json:"item"`
+			Gender  string   `json:"gender"`
+		}
 
-	// API endpoints
+		var reqData RequestData2
+		if err := json.Unmarshal(data, &reqData); err != nil {
+			fmt.Println("Error unmarshalling JSON:", err)
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		// Check if directory exists, create if not
+		selectedOutputsDir := "../selected_outputs"
+		if _, err := os.Stat(selectedOutputsDir); os.IsNotExist(err) {
+			err := os.MkdirAll(selectedOutputsDir, 0755)
+			if err != nil {
+				http.Error(w, "Error creating directory: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+		FolderName := makeFileName(RequestData{
+			Parent_item: reqData.SubItem,
+			Gender:      reqData.Gender,
+			RealItem:    reqData.Item,
+		})
+		finalDir := selectedOutputsDir + "/" + FolderName
+		if _, err := os.Stat(finalDir); os.IsNotExist(err) {
+			err := os.MkdirAll(finalDir, 0755)
+			if err != nil {
+				http.Error(w, "Error creating directory: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+		currentTime := time.Now().Format("20060102150405.000")
+		File, err := os.Create("../selected_outputs/" + FolderName + "/" + reqData.Item + "_" + currentTime + ".csv")
+		if err != nil {
+			http.Error(w, "Error creating file: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Println(File)
+		defer File.Close()
+		csvWriter := csv.NewWriter(File)
+		defer csvWriter.Flush()
+		// Write header if needed
+		err = csvWriter.Write([]string{"URL"})
+		if err != nil {
+			http.Error(w, "Error writing CSV header: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Write each URL as a separate row
+		for _, item := range reqData.Items {
+			err = csvWriter.Write([]string{item})
+			if err != nil {
+				http.Error(w, "Error writing CSV data: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Image received"))
+	})
+
 	mux.HandleFunc("/categories/male", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(male)
