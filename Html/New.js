@@ -9,7 +9,7 @@ const checkIfLists = (data) => {
     return typeof data === 'object' && !Array.isArray(data) && data !== null;
 }
 
-const DisplayList = (list, key, gender) => {
+const DisplayList = (list, key, gender,prev) => {
     const element = document.getElementById(key);
     let divForList = document.createElement('div');
     divForList.classList.add('colSpan2');
@@ -39,6 +39,8 @@ const readDataInsideInside = (data, key, gender) => {
     divForInside.id = `internalDiv${gender}Inside` + key;
 
     Object.keys(data).forEach((keyInside) => {
+        let sanitizedKeyInside = sanitizeKeys(keyInside);
+
         let submitButton = document.createElement('button');
         submitButton.innerHTML = `
            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
@@ -49,16 +51,16 @@ const readDataInsideInside = (data, key, gender) => {
                 <path d="m6 9 6 6 6-6"/>
            </svg>
         `;
-        submitButton.id = `submitButton${gender}Inside` + keyInside;
+        submitButton.id = `submitButton${gender}Inside` + sanitizedKeyInside;
 
         let div = document.createElement('div');
         div.classList.add('grid');
         div.classList.add('mar');
-        div.id = `divInside${keyInside}`;
+        div.id = `divInside${sanitizedKeyInside}`;
 
         let paragraph = document.createElement('p');
-        paragraph.textContent = keyInside;
-        paragraph.id = keyInside;
+        paragraph.textContent = keyInside.trim();
+        paragraph.id = sanitizedKeyInside;
         div.appendChild(paragraph);
         div.appendChild(submitButton);
         divForInside.appendChild(div);
@@ -67,21 +69,21 @@ const readDataInsideInside = (data, key, gender) => {
 
         if (!checkIfLists(data[keyInside])) {
             submitButton.addEventListener('click', () => {
-                let existingDiv = document.getElementById(`divForList${gender}` + 'divInside' + keyInside);
+                let existingDiv = document.getElementById(`divForList${gender}` + 'divInside' + sanitizedKeyInside);
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                DisplayList(data[keyInside], 'divInside' + keyInside, gender);
+                DisplayList(data[keyInside], 'divInside' + sanitizedKeyInside, gender, keyInside);
             });
         } else {
             submitButton.addEventListener('click', () => {
-                let existingDiv = document.getElementById(`internalDiv${gender}Inside` + 'divInside' + keyInside);
+                let existingDiv = document.getElementById(`internalDiv${gender}Inside` + 'divInside' + sanitizedKeyInside);
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                readDataInsideInside(data[keyInside], 'divInside' + keyInside, gender);
+                readDataInsideInside(data[keyInside], 'divInside' + sanitizedKeyInside, gender);
             });
         }
     });
@@ -92,14 +94,16 @@ const readDataInside = (data, gender) => {
     const element = document.getElementById(`internalDiv${gender}`);
 
     Object.keys(data).forEach((key) => {
+        let sanitizedKey = sanitizeKeys(key);
+
         let div = document.createElement('div');
         div.classList.add('mar');
         div.classList.add('grid');
-        div.id = 'div' + key.trim();
+        div.id = 'div' + sanitizedKey;
 
         let paragraph = document.createElement('p');
-        paragraph.textContent = key;
-        paragraph.id = key.trim();
+        paragraph.textContent = key.trim();
+        paragraph.id = sanitizedKey;
 
         let submitButton = document.createElement('button');
         submitButton.innerHTML = `
@@ -111,7 +115,7 @@ const readDataInside = (data, gender) => {
                 <path d="m6 9 6 6 6-6"/>
            </svg>
         `;
-        submitButton.id = `submitButton${gender}` + key;
+        submitButton.id = `submitButton${gender}` + sanitizedKey;
 
         div.appendChild(paragraph);
         div.appendChild(submitButton);
@@ -119,21 +123,21 @@ const readDataInside = (data, gender) => {
 
         if (!checkIfLists(data[key])) {
             submitButton.addEventListener('click', () => {
-                let existingDiv = document.getElementById(`divForList${gender}` + 'div' + key.trim());
+                let existingDiv = document.getElementById(`divForList${gender}` + 'div' + sanitizedKey);
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                DisplayList(data[key], 'div' + key.trim(), gender);
+                DisplayList(data[key], 'div' + sanitizedKey, gender, key);
             });
         } else {
             submitButton.addEventListener('click', () => {
-                let existingDiv = document.getElementById(`internalDiv${gender}Inside` + 'div' + key.trim());
+                let existingDiv = document.getElementById(`internalDiv${gender}Inside` + 'div' + sanitizedKey);
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                readDataInsideInside(data[key], 'div' + key.trim(), gender);
+                readDataInsideInside(data[key], 'div' + sanitizedKey, gender);
             });
         }
 
@@ -141,6 +145,10 @@ const readDataInside = (data, gender) => {
     });
 }
 
+const sanitizeKeys = (key) => {
+    key=key.trim();
+    return key.replace(/[^a-zA-Z0-9_-]+/g, '_');
+}
 const readData = async (gender) => {
     try {
         const response = await fetch(`categories/${gender.toLowerCase()}`);
@@ -154,6 +162,7 @@ const readData = async (gender) => {
         }
 
         data = await response.json();
+
     } catch (error) {
         console.error('Error fetching data:', error);
     }
