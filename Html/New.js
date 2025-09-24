@@ -1,3 +1,5 @@
+import { sayHello } from "./Hover";
+
 let data;
 let data2 = [];
 const MaleButton = document.getElementById('MaleBtn');
@@ -96,12 +98,10 @@ const readDataInsideInside = (data, key, gender) => {
                 let existingDiv = document.getElementById(`divForList${gender}${gender}divInside${sanitizedKeyInside}`);
                 let existingDivs = document.getElementsByClassName('removeDiv');
                 let currentRow=document.getElementById(`internalDiv${gender}Inside${key}`);
-                let nextRow = currentRow.nextElementSibling;
-
-// Check if it exists, then remove it
-if (nextRow) {
-    nextRow.remove();
-}
+                 let nextRow = currentRow.nextElementSibling;
+    if (nextRow) {
+        nextRow.remove();
+    }
                 RotateInternalSvg(`internalDiv${gender}Inside${key}`,`${gender}divInside${sanitizedKeyInside}`);
                 let svg = div.querySelector('svg');
                 svg.style.transform = 'rotate(90deg)';
