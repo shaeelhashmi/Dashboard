@@ -93,14 +93,37 @@ const readDataInsideInside = (data, key, gender) => {
 
         if (!checkIfLists(data[keyInside])) {
             submitButton.addEventListener('click', () => {
+                let existingDiv = document.getElementById(`divForList${gender}${gender}divInside${sanitizedKeyInside}`);
                 let existingDivs = document.getElementsByClassName('removeDiv');
+                RotateInternalSvg(`internalDiv${gender}Inside${key}`,`${gender}divInside${sanitizedKeyInside}`);
+                let svg = div.querySelector('svg');
+                svg.style.transform = 'rotate(90deg)';
                 Array.from(existingDivs).forEach(div => div.remove());
+                if (existingDiv) {
+                    svg.style.transform = 'rotate(0deg)';
+                    existingDiv.classList.toggle('scaledZero');
+                    return;
+                }
+               
                 DisplayList(data[keyInside], `${gender}divInside${sanitizedKeyInside}`, gender, keyInside);
             });
         } else {
             submitButton.addEventListener('click', () => {
+                
                 let existingDiv = document.getElementById(`internalDiv${gender}Inside${gender}divInside${sanitizedKeyInside}`);
+                let existingDivs = document.getElementsByClassName('removeDiv');
+                RotateInternalSvg(`internalDiv${gender}Inside${key}`,`${gender}divInside${sanitizedKeyInside}`);
+                let svg = div.querySelector('svg');
+                svg.style.transform = 'rotate(90deg)';
+                let existingDivsInside = document.getElementsByClassName('removeDiv1');
+                Array.from(existingDivsInside).forEach(div => {
+                    if (div.id !== `internalDiv${gender}Inside${key}`) {
+                        div.remove();
+                    }
+                });
+                Array.from(existingDivs).forEach(div => div.remove());
                 if (existingDiv) {
+                     svg.style.transform = 'rotate(0deg)';
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
@@ -144,9 +167,15 @@ const readDataInside = (data, gender) => {
         if (!checkIfLists(data[key])) {
             submitButton.addEventListener('click', () => {
                 let existingDiv = document.getElementById(`divForList${gender}${gender}div${sanitizedKey}`);
-                let divs=document.getElementsByClassName('removeDiv');
+                let divs=document.getElementsByClassName('removeDiv1');
+                let divs2=document.getElementsByClassName('removeDiv');
+                RotateInternalSvg(`internalDiv${gender}`,`${gender}div${sanitizedKey}`)
+                let svg = div.querySelector('svg');
+                svg.style.transform = 'rotate(90deg)';
+                Array.from(divs2).forEach(div=>div.remove());
                 Array.from(divs).forEach(div=>div.remove());
                 if (existingDiv) {
+                     svg.style.transform = 'rotate(0deg)';
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
@@ -155,9 +184,15 @@ const readDataInside = (data, gender) => {
         } else {
             submitButton.addEventListener('click', () => {
                 let existingDiv = document.getElementById(`internalDiv${gender}Inside${gender}div${sanitizedKey}`);
-                let divs=document.getElementsByClassName('removeDiv');
+                 RotateInternalSvg(`internalDiv${gender}`,`${gender}div${sanitizedKey}`)
+                let svg = div.querySelector('svg');
+                svg.style.transform = 'rotate(90deg)';
+                let divs=document.getElementsByClassName('removeDiv1');
+                  let divs2=document.getElementsByClassName('removeDiv');
+                Array.from(divs2).forEach(div=>div.remove());
                 Array.from(divs).forEach(div=>div.remove());
                 if (existingDiv) {
+                    svg.style.transform = 'rotate(0deg)';
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
@@ -168,8 +203,20 @@ const readDataInside = (data, gender) => {
         data2.push(data[key]);
     });
 }
-
-
+const RotateInternalSvg = (id,currentElement) =>{
+    const outerElement=document.getElementById(id);
+    let divs=outerElement.querySelectorAll("div");
+    divs.forEach(div=>{
+        if (div.id!==currentElement)
+        {
+            let svg=div.querySelector('svg');
+            if (svg)
+            {
+                svg.style.transform='rotate(0deg)';
+            }
+        }
+    });
+}
 const sanitizeKeys = (key) => {
     key=key.trim();
     return key.replace(/[^a-zA-Z0-9_-]+/g, '_');
@@ -193,10 +240,18 @@ const readData = async (gender) => {
     }
     readDataInside(data, gender);
 }
+const RemoveDivs = () => {
+    let existingDivs = document.getElementsByClassName('removeDiv');
+    Array.from(existingDivs).forEach(div => div.remove());
+    let existingDivs2 = document.getElementsByClassName('removeDiv1');
+    Array.from(existingDivs2).forEach(div => div.remove());
+}
 
 // Male toggle
 MaleButton.addEventListener('click', () => {
     let element = document.getElementById('internalDivMale');
+    RemoveDivs();
+
     if (functionCalled) {
         element.innerHTML = '';
         functionCalled = false;
@@ -217,6 +272,7 @@ MaleButton.addEventListener('click', () => {
 // Female toggle
 FemaleButton.addEventListener('click', () => {
     let element = document.getElementById('internalDivFemale');
+    RemoveDivs();
     if (functionCalledFemale) {
         element.innerHTML = '';
         functionCalledFemale = false;
