@@ -59,9 +59,59 @@ const hoverEffectWithList = (element,list,prev,gender) => {
     });
     element.appendChild(div);
 }
-const HoverEffectWithoutList = (element,key) =>{
-    
-}
+const HoverEffectWithoutList = (element, data, gender) => {
+    // Avoid duplicating hover div
+    if (document.getElementById('hoverDiv' + element.id)) {
+        return;
+    }
+
+    const divForInside = document.createElement('div');
+    divForInside.classList.add('hoverDiv'); 
+    divForInside.id = 'hoverDiv' + element.id;
+
+    Object.keys(data).forEach((keyInside) => {
+        let sanitizedKeyInside = sanitizeKeys(keyInside);
+
+        let innerDiv = document.createElement('div');
+        innerDiv.classList.add('grid', 'mar');
+        innerDiv.id = `${gender}hoverInside${sanitizedKeyInside}`;
+
+        let paragraph = document.createElement('p');
+        paragraph.textContent = keyInside.trim();
+        paragraph.id = `${gender}${sanitizedKeyInside}`;
+        innerDiv.appendChild(paragraph);
+
+        // If next level is a list
+        if (!checkIfLists(data[keyInside])) {
+            innerDiv.addEventListener('mouseover', () => {
+                hoverEffectWithList(innerDiv, data[keyInside], keyInside, gender);
+            });
+            innerDiv.addEventListener('mouseout', () => {
+                let hoverDiv = document.getElementById('hoverDiv' + innerDiv.id);
+                if (hoverDiv && !innerDiv.matches(':hover')) {
+                    hoverDiv.remove();
+                }
+            });
+        } else {
+            // Recursive hover for deeper objects
+            innerDiv.addEventListener('mouseover', () => {
+                HoverEffectWithoutList(innerDiv, data[keyInside], gender);
+            });
+            innerDiv.addEventListener('mouseout', () => {
+                let hoverDiv = document.getElementById('hoverDiv' + innerDiv.id);
+                if (hoverDiv && !innerDiv.matches(':hover')) {
+                    hoverDiv.remove();
+                }
+            });
+        }
+
+        divForInside.appendChild(innerDiv);
+    });
+
+    element.appendChild(divForInside);
+};
+
+
 //Clicking
 const DisplayList = (list, key, gender, prev) => {
     const element = document.getElementById("outergrid");
@@ -253,6 +303,15 @@ const readDataInside = (data, gender) => {
                 DisplayList(data[key], `${gender}div${sanitizedKey}`, gender, key);
             });
         } else {
+            div.addEventListener('mouseover', () => {
+                HoverEffectWithoutList(div, data[key], gender);
+            });
+            div.addEventListener('mouseout', () => {
+                let element=document.getElementById('hoverDiv'+div.id);
+                if (element && !div.matches(':hover')) {
+                    element.remove();
+                }    });
+                
             submitButton.addEventListener('click', () => {
                 let existingDiv = document.getElementById(`internalDiv${gender}Inside${gender}div${sanitizedKey}`);
                  RotateInternalSvg(`internalDiv${gender}`,`${gender}div${sanitizedKey}`)
