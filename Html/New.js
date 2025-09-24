@@ -115,7 +115,7 @@ const readDataInsideInside = (data, key, gender) => {
 }
 
 const readDataInside = (data, gender) => {
-    const element = document.getElementById(`internalDiv${gender}`);
+    const element = document.getElementById(`internalDivMale`);
 
     Object.keys(data).forEach((key) => {
         let sanitizedKey = sanitizeKeys(key);
@@ -192,9 +192,7 @@ const readData = async (gender) => {
     }
     readDataInside(data, gender);
 }
-const toastMessage =async()=>{
-    const toast = document.getElementById('toast');
-}
+
 // Male toggle
 MaleButton.addEventListener('click', () => {
     let element = document.getElementById('internalDivMale');
@@ -203,17 +201,25 @@ MaleButton.addEventListener('click', () => {
         functionCalled = false;
         return;
     }
+    if (functionCalledFemale){
+        element.innerHTML = '';
+        functionCalledFemale = false;
+    }
     readData('Male');
     functionCalled = true;
 });
 
 // Female toggle
 FemaleButton.addEventListener('click', () => {
-    let element = document.getElementById('internalDivFemale');
+    let element = document.getElementById('internalDivMale');
     if (functionCalledFemale) {
         element.innerHTML = '';
         functionCalledFemale = false;
         return;
+    }
+    if (functionCalled){
+        element.innerHTML = '';
+        functionCalled = false;
     }
     readData('Female');
     functionCalledFemale = true;
