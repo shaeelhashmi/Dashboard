@@ -91,6 +91,8 @@ SendData();
        body: JSON.stringify(sendData)
 
     })
+    alert("Items saved successfully! The page will reload now.");
+    location.reload();
     }
     catch(error){
         console.error('Error:', error);

@@ -150,7 +150,80 @@ func main() {
 			http.Error(w, "Error reading CSV file: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
+		// Read all CSV files in the directory
+		dirPath := "../selected_outputs/" + fileName
+		var allSelectedData []string
 
+		// Check if directory exists
+		if _, err := os.Stat(dirPath); !os.IsNotExist(err) {
+			files, err := os.ReadDir(dirPath)
+			if err == nil {
+				for _, file := range files {
+					if !file.IsDir() && strings.HasSuffix(file.Name(), ".csv") {
+						csvContent, err := os.ReadFile(dirPath + "/" + file.Name())
+						if err == nil {
+							reader := csv.NewReader(strings.NewReader(string(csvContent)))
+							rows, err := reader.ReadAll()
+							if err == nil {
+								// Skip header row if it exists and add all URL values to 1-D array
+								for i, row := range rows {
+									if i == 0 && len(row) > 0 && row[0] == "URL" {
+										continue // Skip header
+									}
+									if len(row) > 0 {
+										allSelectedData = append(allSelectedData, row[0])
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if len(allSelectedData) == 0 {
+			w.Header().Set("Content-Type", "text/csv")
+			w.Write(csv_data)
+			return
+		}
+		reader := csv.NewReader(strings.NewReader(string(csv_data)))
+		rows, err := reader.ReadAll()
+		if err != nil {
+			http.Error(w, "Error parsing CSV: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Create a map for faster lookup of selected data
+		selectedMap := make(map[string]bool)
+		for _, selected := range allSelectedData {
+			cleanSelected := strings.Trim(selected, `"'`)
+			selectedMap[cleanSelected] = true
+		}
+
+		// Filter rows, keeping header and non-selected items
+		var filteredRows [][]string
+		for i, row := range rows {
+			if i == 0 {
+				// Keep header row
+				filteredRows = append(filteredRows, row)
+				continue
+			}
+
+			if len(row) > 0 {
+				cleanUrl := strings.Trim(row[0], `"'`)
+				if !selectedMap[cleanUrl] {
+					filteredRows = append(filteredRows, row)
+				}
+			}
+		}
+
+		// Convert filtered data back to CSV format
+		var filteredCSV strings.Builder
+		csvWriter := csv.NewWriter(&filteredCSV)
+		for _, row := range filteredRows {
+			csvWriter.Write(row)
+		}
+		csvWriter.Flush()
+		csv_data = []byte(filteredCSV.String())
 		w.Header().Set("Content-Type", "text/csv")
 		w.Write(csv_data)
 	})

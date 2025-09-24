@@ -41,7 +41,6 @@ const DisplayList = (list, key, gender, prev) => {
            {
                button.classList.add('disabledButton');
                button.textContent='Not Available';
-               button.disabled=true;
            }
         }
         catch(e){
@@ -193,7 +192,9 @@ const readData = async (gender) => {
     }
     readDataInside(data, gender);
 }
-
+const toastMessage =async()=>{
+    const toast = document.getElementById('toast');
+}
 // Male toggle
 MaleButton.addEventListener('click', () => {
     let element = document.getElementById('internalDivMale');
