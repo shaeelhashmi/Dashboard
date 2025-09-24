@@ -9,6 +9,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
     body{
         font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
     }
     .mar{
         margin-left: 20px;
@@ -32,14 +33,18 @@
         border: none;
         cursor: pointer;
     }
-    .outergrid{
+    #outergrid{
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
 
+    }
+    button svg{
+        rotate: -90deg;
+        transition: all 0.3s ease-in-out;
     }   
 </style>
 <body>
-    <div class="outergrid">
+    <div id="outergrid">
     <div >
     <div >
     <div class="grid">
@@ -49,19 +54,21 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
     </button>
     </div>
+          <div id="internalDivMale"></div>
+    
 
     </div>
     <div >
         <div class="grid">
-    <h1>Female</h1>
-    <button id="FemaleBtn">
+            <h1>Female</h1>
+            <button id="FemaleBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
     </button>
     </div>
     <div id="internalDivFemale"></div>
     </div>
     </div>
-        <div id="internalDivMale"></div>
+  
         </div>
 </body>
 <script src="./New.js"></script>

@@ -9,9 +9,9 @@ const checkIfLists = (data) => {
     return typeof data === 'object' && !Array.isArray(data) && data !== null;
 }
 const DisplayList = (list, key, gender, prev) => {
-    const element = document.getElementById(key);
+    const element = document.getElementById("outergrid");
     let divForList = document.createElement('div');
-    divForList.classList.add('colSpan2');
+    divForList.classList.add('removeDiv');
     divForList.id = `divForList${gender}${key}`;
     element.appendChild(divForList);
 
@@ -58,9 +58,9 @@ const DisplayList = (list, key, gender, prev) => {
 }
 
 const readDataInsideInside = (data, key, gender) => {
-    const element = document.getElementById(key);
+    const element = document.getElementById("outergrid");
     let divForInside = document.createElement('div');
-    divForInside.classList.add('colSpan2');
+    divForInside.classList.add('removeDiv1');
     divForInside.id = `internalDiv${gender}Inside${key}`;
 
     Object.keys(data).forEach((keyInside) => {
@@ -93,11 +93,8 @@ const readDataInsideInside = (data, key, gender) => {
 
         if (!checkIfLists(data[keyInside])) {
             submitButton.addEventListener('click', () => {
-                let existingDiv = document.getElementById(`divForList${gender}${gender}divInside${sanitizedKeyInside}`);
-                if (existingDiv) {
-                    existingDiv.classList.toggle('scaledZero');
-                    return;
-                }
+                let existingDivs = document.getElementsByClassName('removeDiv');
+                Array.from(existingDivs).forEach(div => div.remove());
                 DisplayList(data[keyInside], `${gender}divInside${sanitizedKeyInside}`, gender, keyInside);
             });
         } else {
@@ -115,7 +112,7 @@ const readDataInsideInside = (data, key, gender) => {
 }
 
 const readDataInside = (data, gender) => {
-    const element = document.getElementById(`internalDivMale`);
+    const element = document.getElementById(`internalDiv${gender}`);
 
     Object.keys(data).forEach((key) => {
         let sanitizedKey = sanitizeKeys(key);
@@ -147,6 +144,8 @@ const readDataInside = (data, gender) => {
         if (!checkIfLists(data[key])) {
             submitButton.addEventListener('click', () => {
                 let existingDiv = document.getElementById(`divForList${gender}${gender}div${sanitizedKey}`);
+                let divs=document.getElementsByClassName('removeDiv');
+                Array.from(divs).forEach(div=>div.remove());
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
@@ -156,6 +155,8 @@ const readDataInside = (data, gender) => {
         } else {
             submitButton.addEventListener('click', () => {
                 let existingDiv = document.getElementById(`internalDiv${gender}Inside${gender}div${sanitizedKey}`);
+                let divs=document.getElementsByClassName('removeDiv');
+                Array.from(divs).forEach(div=>div.remove());
                 if (existingDiv) {
                     existingDiv.classList.toggle('scaledZero');
                     return;
@@ -199,28 +200,36 @@ MaleButton.addEventListener('click', () => {
     if (functionCalled) {
         element.innerHTML = '';
         functionCalled = false;
+        MaleButton.querySelector('svg').style.transform = 'rotate(0deg)';
         return;
     }
     if (functionCalledFemale){
+        FemaleButton.querySelector('svg').style.transform = 'rotate(0deg)';
         element.innerHTML = '';
         functionCalledFemale = false;
+        document.getElementById('internalDivFemale').innerHTML = '';
     }
+    MaleButton.querySelector('svg').style.transform = 'rotate(90deg)';
     readData('Male');
     functionCalled = true;
 });
 
 // Female toggle
 FemaleButton.addEventListener('click', () => {
-    let element = document.getElementById('internalDivMale');
+    let element = document.getElementById('internalDivFemale');
     if (functionCalledFemale) {
         element.innerHTML = '';
         functionCalledFemale = false;
+        FemaleButton.querySelector('svg').style.transform = 'rotate(0deg)';
         return;
     }
     if (functionCalled){
+        MaleButton.querySelector('svg').style.transform = 'rotate(0deg)';
         element.innerHTML = '';
         functionCalled = false;
+        document.getElementById('internalDivMale').innerHTML = '';
     }
+    FemaleButton.querySelector('svg').style.transform = 'rotate(90deg)';
     readData('Female');
     functionCalledFemale = true;
 });
