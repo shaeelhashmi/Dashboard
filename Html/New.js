@@ -95,6 +95,13 @@ const readDataInsideInside = (data, key, gender) => {
             submitButton.addEventListener('click', () => {
                 let existingDiv = document.getElementById(`divForList${gender}${gender}divInside${sanitizedKeyInside}`);
                 let existingDivs = document.getElementsByClassName('removeDiv');
+                let currentRow=document.getElementById(`internalDiv${gender}Inside${key}`);
+                let nextRow = currentRow.nextElementSibling;
+
+// Check if it exists, then remove it
+if (nextRow) {
+    nextRow.remove();
+}
                 RotateInternalSvg(`internalDiv${gender}Inside${key}`,`${gender}divInside${sanitizedKeyInside}`);
                 let svg = div.querySelector('svg');
                 svg.style.transform = 'rotate(90deg)';
