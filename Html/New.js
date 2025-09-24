@@ -10,6 +10,59 @@ let functionCalledFemale = false;
 const checkIfLists = (data) => {
     return typeof data === 'object' && !Array.isArray(data) && data !== null;
 }
+//Hovering
+const hoverEffectWithList = (element,list,prev,gender) => {
+    if (document.getElementById('hoverDiv'+element.id))
+    {
+        return;
+    }
+    const div = document.createElement('div');
+    div.classList.add('hoverDiv');
+    div.id = 'hoverDiv'+element.id;
+    list.forEach(async(item) => {
+        let innerDiv = document.createElement('div');
+        innerDiv.classList.add('grid')
+         let button = document.createElement('a');
+        const p = document.createElement('p');
+        p.textContent = item;
+        innerDiv.appendChild(p);
+        button.textContent = 'View more';
+        button.id = `submitButton${element.id}${sanitizeKeys(item)}`;
+        try
+        {
+            const data={
+                sub_item:sanitizeKeys(prev),
+                item:sanitizeKeys(item),
+                gender:sanitizeKeys(gender)
+            }
+            const response= await fetch('products/exists',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify(data)
+            });
+            const result=await response.json();
+           if (!result.exists)
+           {
+               button.classList.add('disabledButton');
+               button.textContent='Not Available';
+           }
+        }
+        catch(e){
+            console.error('Error fetching product existence:',e);
+
+        }
+        button.href = `/data/?sub_item=${sanitizeKeys(prev)}&item=${sanitizeKeys(item)}&gender=${gender}`;
+        innerDiv.appendChild(button);
+        div.appendChild(innerDiv);
+    });
+    element.appendChild(div);
+}
+const HoverEffectWithoutList = (element,key) =>{
+    
+}
+//Clicking
 const DisplayList = (list, key, gender, prev) => {
     const element = document.getElementById("outergrid");
     let divForList = document.createElement('div');
@@ -148,8 +201,9 @@ const readDataInside = (data, gender) => {
         let sanitizedKey = sanitizeKeys(key);
 
         let div = document.createElement('div');
-        div.classList.add('mar', 'grid');
+        div.classList.add('mar', 'grid','relative');
         div.id = `${gender}div${sanitizedKey}`;
+
 
         let paragraph = document.createElement('p');
         paragraph.textContent = key.trim();
@@ -170,8 +224,18 @@ const readDataInside = (data, gender) => {
         div.appendChild(paragraph);
         div.appendChild(submitButton);
         element.appendChild(div);
-
+        //Hover effects
+        
+        //End hover effects
         if (!checkIfLists(data[key])) {
+            div.addEventListener('mouseover', () => {
+                hoverEffectWithList(div, data[key],key,gender);
+        });
+        div.addEventListener('mouseout', () => {
+           let element=document.getElementById('hoverDiv'+div.id);
+            if (element && !div.matches(':hover')) {
+                element.remove();
+            }    });
             submitButton.addEventListener('click', () => {
                 let existingDiv = document.getElementById(`divForList${gender}${gender}div${sanitizedKey}`);
                 let divs=document.getElementsByClassName('removeDiv1');
