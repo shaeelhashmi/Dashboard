@@ -13,6 +13,7 @@
         padding: 20px;
         height: 100vh;
         margin-top: 40px;
+        position: relative;
     }
     #topDiv img {
     width: 100%;
@@ -33,14 +34,43 @@ button{
     font-weight: bold;
     top: 0px;
     right: 0px;
+    z-index: 1000;
 
+}
+#topDiv div{
+    position: relative;
+}
+#topDiv input{
+    width:50% ;
+    height: 50%;
+    position: absolute;
+    opacity: 0.5;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    margin: auto;
+    cursor: pointer;
+    z-index: 500;
+    
+}
+#toast{
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    right: 50%;
+    z-index: 1000;
+    width: 300px;
+    text-align: center;
 }
    </style> 
 <body>
+    <h1 id="toast"></h1>
     <button id="downloadBtn">Download CSV</button>
-    <div id="topDiv">
+    <!-- <div id="topDiv">
 
-    </div>
+    </div> -->
+
 </body>
 <script src="/Products.js"></script>
 </html>

@@ -1,20 +1,18 @@
-console.log("New.js loaded");
+
 const urlParams = new URLSearchParams(window.location.search);
 const queryValue = urlParams.get('sub_item'); // Replace 'parameterName' with your actual parameter name
 const secondQueryValue = urlParams.get('item'); // Example of getting another parameter
 const gender = urlParams.get('gender');
 let checkedItems = [];
-console.log("Query Value:", queryValue);
-console.log("Second Query Value:", secondQueryValue);
-console.log("Gender:", gender);
+const toast = document.getElementById("toast");
 // Create JSON object with all URL parameters
 const paramsData = {
     sub_item: queryValue,
     item: secondQueryValue,
     gender: gender
 };
-const topDiv=document.getElementById('topDiv');
-
+const topDiv=document.createElement('div');
+topDiv.id='topDiv';
 const SendData = async() => {
     try {
         const response = await fetch('/get/items', {
@@ -29,9 +27,8 @@ const SendData = async() => {
         // parse into rows
         const rows = csvText.split('\n').map(row => row.split(','));
         rows.forEach(row => {
-            console.log('Processing row:', row[0].trim());
            if(!row[0] || row[0].trim() === 'urls' || row[0].trim() === '') {
-        console.log('Skipping:', row[0]);
+        
         return;
     }
         // Remove quotes from the beginning and end of the URL if present
@@ -58,7 +55,11 @@ const SendData = async() => {
                 else {
                     checkedItems = checkedItems.filter(item => item !== event.target.value);
                 }
-                console.log('Checked items:', checkedItems);
+                if (checkedItems.length === 0) {
+                    toast.textContent = '';
+                    return;
+                }
+                toast.textContent = `${checkedItems.length} out of ${rows.length} selected`;
             });
             div.appendChild(checkBox);
 
@@ -67,6 +68,16 @@ const SendData = async() => {
             topDiv.appendChild(div);
             
         });
+//         document.querySelectorAll("#topDiv > div").forEach(div => {
+//   div.addEventListener("click", e => {
+//     // prevent double toggling when clicking directly on the checkbox
+//     if (e.target.tagName === "INPUT") return;
+
+//     const checkbox = div.querySelector("input[type='checkbox']");
+//     checkbox.checked = !checkbox.checked;
+//   });
+// });
+        document.body.appendChild(topDiv);
     } catch (error) {
         console.error('Error:', error);
     }
