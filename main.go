@@ -87,6 +87,42 @@ func main() {
 		http.ServeFile(w, r, "./Html/Products.html")
 	})
 	// API endpoints
+	mux.HandleFunc("/products/exists", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		data, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Error reading request body", http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+		var reqData RequestData
+		if err := json.Unmarshal(data, &reqData); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+		fileName := makeFileName(reqData)
+		_, err = os.Stat("../output/" + fileName)
+		if os.IsNotExist(err) {
+			w.WriteHeader(http.StatusNotFound)
+			response := map[string]bool{"exists": false}
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+		_, err = os.Stat("../output/" + fileName + "/" + reqData.RealItem + ".csv")
+		if os.IsNotExist(err) {
+			w.WriteHeader(http.StatusNotFound)
+			response := map[string]bool{"exists": false}
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		response := map[string]bool{"exists": true}
+		json.NewEncoder(w).Encode(response)
+	})
 	mux.HandleFunc("/get/items", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

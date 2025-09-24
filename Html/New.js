@@ -9,20 +9,45 @@ const checkIfLists = (data) => {
     return typeof data === 'object' && !Array.isArray(data) && data !== null;
 }
 const DisplayList = (list, key, gender, prev) => {
-    console.log(prev);
     const element = document.getElementById(key);
     let divForList = document.createElement('div');
     divForList.classList.add('colSpan2');
     divForList.id = `divForList${gender}${key}`;
     element.appendChild(divForList);
 
-    list.forEach((item) => {
+    list.forEach(async (item) => {
         let div = document.createElement('div');
         let button = document.createElement('a');
         let paragraph = document.createElement('p');
         div.classList.add('mar', 'grid');
-        button.textContent = 'Submit';
+        button.textContent = 'View more';
         button.id = `submitButton${gender}List${sanitizeKeys(item)}`;
+        try
+        {
+            const data={
+                sub_item:sanitizeKeys(prev),
+                item:sanitizeKeys(item),
+                gender:sanitizeKeys(gender)
+            }
+            const response= await fetch('products/exists',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify(data)
+            });
+            const result=await response.json();
+           if (!result.exists)
+           {
+               button.classList.add('disabledButton');
+               button.textContent='Not Available';
+               button.disabled=true;
+           }
+        }
+        catch(e){
+            console.error('Error fetching product existence:',e);
+
+        }
 
         button.href = `/data/?sub_item=${sanitizeKeys(prev)}&item=${sanitizeKeys(item)}&gender=${gender}`;
         paragraph.textContent = item;
