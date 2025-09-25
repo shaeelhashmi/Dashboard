@@ -55,6 +55,7 @@ const hoverEffectWithList = (element,list,prev,gender) => {
         }
         button.href = `/data/?sub_item=${sanitizeKeys(prev)}&item=${sanitizeKeys(item)}&gender=${gender}`;
         innerDiv.appendChild(button);
+        innerDiv.classList.add('my-4')
         div.appendChild(innerDiv);
     });
     element.appendChild(div);
@@ -79,8 +80,15 @@ const HoverEffectWithoutList = (element, data, gender) => {
         let paragraph = document.createElement('p');
         paragraph.textContent = keyInside.trim();
         paragraph.id = `${gender}${sanitizedKeyInside}`;
+        innerDiv.classList.add('my-4')
         innerDiv.appendChild(paragraph);
-
+        let button = document.createElement('button');
+        button.innerHTML = `
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+        `;
         // If next level is a list
         if (!checkIfLists(data[keyInside])) {
             innerDiv.addEventListener('mouseover', () => {
@@ -104,7 +112,7 @@ const HoverEffectWithoutList = (element, data, gender) => {
                 }
             });
         }
-
+        innerDiv.appendChild(button);
         divForInside.appendChild(innerDiv);
     });
 
@@ -124,7 +132,7 @@ const DisplayList = (list, key, gender, prev) => {
         let div = document.createElement('div');
         let button = document.createElement('a');
         let paragraph = document.createElement('p');
-        div.classList.add('mar', 'grid');
+        div.classList.add('mar', 'grid','my-4');
         button.textContent = 'View more';
         button.id = `submitButton${gender}List${sanitizeKeys(item)}`;
         try
@@ -193,7 +201,7 @@ const readDataInsideInside = (data, key, gender) => {
         div.appendChild(paragraph);
         div.appendChild(submitButton);
         divForInside.appendChild(div);
-
+        div.classList.add('my-4')
         data2.push(data[keyInside]);
 
         if (!checkIfLists(data[keyInside])) {
@@ -273,6 +281,7 @@ const readDataInside = (data, gender) => {
 
         div.appendChild(paragraph);
         div.appendChild(submitButton);
+        div.classList.add('my-2')
         element.appendChild(div);
         //Hover effects
         
