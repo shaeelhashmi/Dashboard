@@ -10,6 +10,7 @@
     body{
         font-family: 'Montserrat', sans-serif;
         font-size: 14px;
+             background-color: #f8f9fa;
     }
     .mar{
         margin-left: 20px;
@@ -43,7 +44,7 @@
     #outergrid{
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
-        background-color: #f8f9fa;
+   
         padding: 10px;
         align-items: center;
 
@@ -53,9 +54,10 @@
         transition: all 0.3s ease-in-out;
     }   
     .hoverDiv{
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         position: absolute;
         background-color: white;
-        border: 1px solid black;
+;
         left: 70%;
         padding: 10px;
         z-index: 1000;
@@ -66,8 +68,8 @@
     <p class="font-light my-2 text-center">Browse and select clothing items by category</p>
     <div id="outergrid">
     <div >
-    <div class="shadow-md p-2 my-4" >
-    <div class="grid">
+    <div class="shadow-md p-2 my-4 bg-white" >
+    <div class="grid mar">
     
     <h1 class="text-3xl my-2 font-semibold  text-blue-600">Male</h1>
     <button id="MaleBtn" class="justify-self-end w-fit">
@@ -78,8 +80,8 @@
     
 
     </div>
-    <div class="shadow-md p-2  my-4">
-        <div class="grid">
+    <div class="shadow-md p-2  my-4 bg-white">
+        <div class="grid mar">
             <h1 class="text-3xl my-2  font-semibold text-pink-600">Female</h1>
             <button id="FemaleBtn" class="justify-self-end w-fit">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>

@@ -44,15 +44,34 @@ const SendData = async() => {
                 return;}
             
             image.src=cleanUrl; 
-            const checkBox=document.createElement('input');
-            checkBox.type='checkbox';
-            checkBox.name='item';
+            
+            const checkBox=document.createElement('button');
+            checkBox.textContent='Select';
             checkBox.value=cleanUrl;
-            checkBox.addEventListener('change', (event) => {
-                if (event.target.checked) {
+            checkBox.classList.add('translate-y-96')
+            image.addEventListener('mouseover',()=>{
+                checkBox.classList.remove('translate-y-96');
+            });
+            image.addEventListener('mouseout',()=>{
+                if(checkBox.matches(':hover')){
+                    return;
+                }
+                if(checkBox.textContent==='Select'){
+                checkBox.classList.add('translate-y-96');
+                image.classList.remove('Brightness');
+                return;
+                }
+                image.classList.add('Brightness');
+
+                
+            });
+            checkBox.addEventListener('click', (event) => {
+                if (event.target.textContent === 'Select') {
                     checkedItems.push(event.target.value);
+                    event.target.textContent = 'Deselect';
                 }
                 else {
+                    event.target.textContent = 'Select';
                     checkedItems = checkedItems.filter(item => item !== event.target.value);
                 }
                 if (checkedItems.length === 0) {
@@ -62,7 +81,10 @@ const SendData = async() => {
                 toast.textContent = `${checkedItems.length} out of ${rows.length} selected`;
             });
             div.appendChild(checkBox);
-
+            let skeleton=document.getElementById('skeleton');
+            if(skeleton){
+                skeleton.style.display='none';
+            }
             div.appendChild(image);
 
             topDiv.appendChild(div);

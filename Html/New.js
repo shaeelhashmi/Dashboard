@@ -24,6 +24,7 @@ const hoverEffectWithList = (element,list,prev,gender) => {
         innerDiv.classList.add('grid')
          let button = document.createElement('a');
         const p = document.createElement('p');
+        p.classList.add('mar');
         p.textContent = item;
         innerDiv.appendChild(p);
         button.textContent = 'View more';
