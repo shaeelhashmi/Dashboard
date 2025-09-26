@@ -73,21 +73,20 @@ button:active{
     
 }
 #toast{
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    right: 50%;
     z-index: 1000;
-    width: 300px;
     text-align: center;
+}
+.fix{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
 }
    </style> 
    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <body >
-    
-    <nav class="w-full flex justify-end p-4 bg-gray-100 shadow-md mb-4 fixed z-50 top-0">
-    <h1 id="toast" ></h1>
+
+    <nav class="w-full fix p-4 bg-gray-100 shadow-md mb-4 fixed z-50 top-0">
+    <h1 id="toast" class="w-full text-3xl font-bold"></h1>
     <button id="downloadBtn">Download CSV</button>
     </nav>
     <!-- <div id="topDiv">

@@ -81,24 +81,16 @@ const SendData = async() => {
                 toast.textContent = `${checkedItems.length} out of ${rows.length} selected`;
             });
             div.appendChild(checkBox);
-            let skeleton=document.getElementById('skeleton');
-            if(skeleton){
-                skeleton.style.display='none';
-            }
+            
             div.appendChild(image);
 
             topDiv.appendChild(div);
             
         });
-//         document.querySelectorAll("#topDiv > div").forEach(div => {
-//   div.addEventListener("click", e => {
-//     // prevent double toggling when clicking directly on the checkbox
-//     if (e.target.tagName === "INPUT") return;
-
-//     const checkbox = div.querySelector("input[type='checkbox']");
-//     checkbox.checked = !checkbox.checked;
-//   });
-// });
+        let skeleton=document.getElementById('skeleton');
+            if(skeleton){
+                skeleton.style.display='none';
+            }
         document.body.appendChild(topDiv);
     } catch (error) {
         console.error('Error:', error);
