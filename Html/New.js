@@ -11,114 +11,114 @@ const checkIfLists = (data) => {
     return typeof data === 'object' && !Array.isArray(data) && data !== null;
 }
 //Hovering
-const hoverEffectWithList = (element,list,prev,gender) => {
-    if (document.getElementById('hoverDiv'+element.id))
-    {
-        return;
-    }
-    const div = document.createElement('div');
-    div.classList.add('hoverDiv');
-    div.id = 'hoverDiv'+element.id;
-    list.forEach(async(item) => {
-        let innerDiv = document.createElement('div');
-        innerDiv.classList.add('grid')
-         let button = document.createElement('a');
-        const p = document.createElement('p');
-        p.classList.add('mar');
-        p.textContent = item;
-        innerDiv.appendChild(p);
-        button.textContent = 'View more';
-        button.id = `submitButton${element.id}${sanitizeKeys(item)}`;
-        try
-        {
-            const data={
-                sub_item:sanitizeKeys(prev),
-                item:sanitizeKeys(item),
-                gender:sanitizeKeys(gender)
-            }
-            const response= await fetch('products/exists',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify(data)
-            });
-            const result=await response.json();
-           if (!result.exists)
-           {
-               button.classList.add('disabledButton');
-               button.textContent='Not Available';
-           }
-        }
-        catch(e){
-            console.error('Error fetching product existence:',e);
+// const hoverEffectWithList = (element,list,prev,gender) => {
+//     if (document.getElementById('hoverDiv'+element.id))
+//     {
+//         return;
+//     }
+//     const div = document.createElement('div');
+//     div.classList.add('hoverDiv');
+//     div.id = 'hoverDiv'+element.id;
+//     list.forEach(async(item) => {
+//         let innerDiv = document.createElement('div');
+//         innerDiv.classList.add('grid')
+//          let button = document.createElement('a');
+//         const p = document.createElement('p');
+//         p.classList.add('mar');
+//         p.textContent = item;
+//         innerDiv.appendChild(p);
+//         button.textContent = 'View more';
+//         button.id = `submitButton${element.id}${sanitizeKeys(item)}`;
+//         try
+//         {
+//             const data={
+//                 sub_item:sanitizeKeys(prev),
+//                 item:sanitizeKeys(item),
+//                 gender:sanitizeKeys(gender)
+//             }
+//             const response= await fetch('products/exists',{
+//                 method:'POST',
+//                 headers:{
+//                     'Content-Type':'application/json'
+//                 },
+//                 body:JSON.stringify(data)
+//             });
+//             const result=await response.json();
+//            if (!result.exists)
+//            {
+//                button.classList.add('disabledButton');
+//                button.textContent='Not Available';
+//            }
+//         }
+//         catch(e){
+//             console.error('Error fetching product existence:',e);
 
-        }
-        button.href = `/data/?sub_item=${sanitizeKeys(prev)}&item=${sanitizeKeys(item)}&gender=${gender}`;
-        innerDiv.appendChild(button);
-        innerDiv.classList.add('my-4')
-        div.appendChild(innerDiv);
-    });
-    element.appendChild(div);
-}
-const HoverEffectWithoutList = (element, data, gender) => {
-    // Avoid duplicating hover div
-    if (document.getElementById('hoverDiv' + element.id)) {
-        return;
-    }
+//         }
+//         button.href = `/data/?sub_item=${sanitizeKeys(prev)}&item=${sanitizeKeys(item)}&gender=${gender}`;
+//         innerDiv.appendChild(button);
+//         innerDiv.classList.add('my-4')
+//         div.appendChild(innerDiv);
+//     });
+//     element.appendChild(div);
+// }
+// const HoverEffectWithoutList = (element, data, gender) => {
+//     // Avoid duplicating hover div
+//     if (document.getElementById('hoverDiv' + element.id)) {
+//         return;
+//     }
 
-    const divForInside = document.createElement('div');
-    divForInside.classList.add('hoverDiv'); 
-    divForInside.id = 'hoverDiv' + element.id;
+//     const divForInside = document.createElement('div');
+//     divForInside.classList.add('hoverDiv'); 
+//     divForInside.id = 'hoverDiv' + element.id;
 
-    Object.keys(data).forEach((keyInside) => {
-        let sanitizedKeyInside = sanitizeKeys(keyInside);
+//     Object.keys(data).forEach((keyInside) => {
+//         let sanitizedKeyInside = sanitizeKeys(keyInside);
 
-        let innerDiv = document.createElement('div');
-        innerDiv.classList.add('grid', 'mar');
-        innerDiv.id = `${gender}hoverInside${sanitizedKeyInside}`;
+//         let innerDiv = document.createElement('div');
+//         innerDiv.classList.add('grid', 'mar');
+//         innerDiv.id = `${gender}hoverInside${sanitizedKeyInside}`;
 
-        let paragraph = document.createElement('p');
-        paragraph.textContent = keyInside.trim();
-        paragraph.id = `${gender}${sanitizedKeyInside}`;
-        innerDiv.classList.add('my-4')
-        innerDiv.appendChild(paragraph);
-        let button = document.createElement('button');
-        button.innerHTML = `
-           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down">
-                <path d="m6 9 6 6 6-6"/>
-              </svg>
-        `;
-        // If next level is a list
-        if (!checkIfLists(data[keyInside])) {
-            innerDiv.addEventListener('mouseover', () => {
-                hoverEffectWithList(innerDiv, data[keyInside], keyInside, gender);
-            });
-            innerDiv.addEventListener('mouseout', () => {
-                let hoverDiv = document.getElementById('hoverDiv' + innerDiv.id);
-                if (hoverDiv && !innerDiv.matches(':hover')) {
-                    hoverDiv.remove();
-                }
-            });
-        } else {
-            // Recursive hover for deeper objects
-            innerDiv.addEventListener('mouseover', () => {
-                HoverEffectWithoutList(innerDiv, data[keyInside], gender);
-            });
-            innerDiv.addEventListener('mouseout', () => {
-                let hoverDiv = document.getElementById('hoverDiv' + innerDiv.id);
-                if (hoverDiv && !innerDiv.matches(':hover')) {
-                    hoverDiv.remove();
-                }
-            });
-        }
-        innerDiv.appendChild(button);
-        divForInside.appendChild(innerDiv);
-    });
+//         let paragraph = document.createElement('p');
+//         paragraph.textContent = keyInside.trim();
+//         paragraph.id = `${gender}${sanitizedKeyInside}`;
+//         innerDiv.classList.add('my-4')
+//         innerDiv.appendChild(paragraph);
+//         let button = document.createElement('button');
+//         button.innerHTML = `
+//            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+//                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down">
+//                 <path d="m6 9 6 6 6-6"/>
+//               </svg>
+//         `;
+//         // If next level is a list
+//         if (!checkIfLists(data[keyInside])) {
+//             innerDiv.addEventListener('mouseover', () => {
+//                 hoverEffectWithList(innerDiv, data[keyInside], keyInside, gender);
+//             });
+//             innerDiv.addEventListener('mouseout', () => {
+//                 let hoverDiv = document.getElementById('hoverDiv' + innerDiv.id);
+//                 if (hoverDiv && !innerDiv.matches(':hover')) {
+//                     hoverDiv.remove();
+//                 }
+//             });
+//         } else {
+//             // Recursive hover for deeper objects
+//             innerDiv.addEventListener('mouseover', () => {
+//                 HoverEffectWithoutList(innerDiv, data[keyInside], gender);
+//             });
+//             innerDiv.addEventListener('mouseout', () => {
+//                 let hoverDiv = document.getElementById('hoverDiv' + innerDiv.id);
+//                 if (hoverDiv && !innerDiv.matches(':hover')) {
+//                     hoverDiv.remove();
+//                 }
+//             });
+//         }
+//         innerDiv.appendChild(button);
+//         divForInside.appendChild(innerDiv);
+//     });
 
-    element.appendChild(divForInside);
-};
+//     element.appendChild(divForInside);
+// };
 
 
 //Clicking

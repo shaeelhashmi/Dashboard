@@ -79,13 +79,18 @@ func main() {
 	// Serve all static files from ./Html
 	// Serve new.html when visiting /home
 	fs := http.FileServer(http.Dir("./Html"))
-	mux.Handle("/", fs)
-	mux.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./Html/new.html")
-	})
-	mux.HandleFunc("/data/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./Html/Products.html")
-	})
+	mux.Handle("/",
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/" {
+				http.ServeFile(w, r, "./Html/new.html")
+				return
+			}
+			if r.URL.Path == "/data/" {
+				http.ServeFile(w, r, "./Html/Products.html")
+				return
+			}
+			fs.ServeHTTP(w, r) // fallback to static files
+		}))
 	// API endpoints
 	mux.HandleFunc("/products/exists", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -136,8 +141,6 @@ func main() {
 		}
 		defer r.Body.Close()
 
-		fmt.Println("Received data:", string(data))
-
 		var reqData RequestData
 		if err := json.Unmarshal(data, &reqData); err != nil {
 			http.Error(w, "Invalid JSON", http.StatusBadRequest)
@@ -154,7 +157,6 @@ func main() {
 		w.Write(csv_data)
 	})
 	mux.HandleFunc("/save/image", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Received request to /save/image")
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -174,7 +176,6 @@ func main() {
 
 		var reqData RequestData2
 		if err := json.Unmarshal(data, &reqData); err != nil {
-			fmt.Println("Error unmarshalling JSON:", err)
 			http.Error(w, "Invalid JSON", http.StatusBadRequest)
 			return
 		}
@@ -207,7 +208,6 @@ func main() {
 			http.Error(w, "Error creating file: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Println(File)
 		defer File.Close()
 		csvWriter := csv.NewWriter(File)
 		defer csvWriter.Flush()
