@@ -10,119 +10,10 @@ let functionCalledFemale = false;
 const checkIfLists = (data) => {
     return typeof data === 'object' && !Array.isArray(data) && data !== null;
 }
-//Hovering
-// const hoverEffectWithList = (element,list,prev,gender) => {
-//     if (document.getElementById('hoverDiv'+element.id))
-//     {
-//         return;
-//     }
-//     const div = document.createElement('div');
-//     div.classList.add('hoverDiv');
-//     div.id = 'hoverDiv'+element.id;
-//     list.forEach(async(item) => {
-//         let innerDiv = document.createElement('div');
-//         innerDiv.classList.add('grid')
-//          let button = document.createElement('a');
-//         const p = document.createElement('p');
-//         p.classList.add('mar');
-//         p.textContent = item;
-//         innerDiv.appendChild(p);
-//         button.textContent = 'View more';
-//         button.id = `submitButton${element.id}${sanitizeKeys(item)}`;
-//         try
-//         {
-//             const data={
-//                 sub_item:sanitizeKeys(prev),
-//                 item:sanitizeKeys(item),
-//                 gender:sanitizeKeys(gender)
-//             }
-//             const response= await fetch('products/exists',{
-//                 method:'POST',
-//                 headers:{
-//                     'Content-Type':'application/json'
-//                 },
-//                 body:JSON.stringify(data)
-//             });
-//             const result=await response.json();
-//            if (!result.exists)
-//            {
-//                button.classList.add('disabledButton');
-//                button.textContent='Not Available';
-//            }
-//         }
-//         catch(e){
-//             console.error('Error fetching product existence:',e);
-
-//         }
-//         button.href = `/data/?sub_item=${sanitizeKeys(prev)}&item=${sanitizeKeys(item)}&gender=${gender}`;
-//         innerDiv.appendChild(button);
-//         innerDiv.classList.add('my-4')
-//         div.appendChild(innerDiv);
-//     });
-//     element.appendChild(div);
-// }
-// const HoverEffectWithoutList = (element, data, gender) => {
-//     // Avoid duplicating hover div
-//     if (document.getElementById('hoverDiv' + element.id)) {
-//         return;
-//     }
-
-//     const divForInside = document.createElement('div');
-//     divForInside.classList.add('hoverDiv'); 
-//     divForInside.id = 'hoverDiv' + element.id;
-
-//     Object.keys(data).forEach((keyInside) => {
-//         let sanitizedKeyInside = sanitizeKeys(keyInside);
-
-//         let innerDiv = document.createElement('div');
-//         innerDiv.classList.add('grid', 'mar');
-//         innerDiv.id = `${gender}hoverInside${sanitizedKeyInside}`;
-
-//         let paragraph = document.createElement('p');
-//         paragraph.textContent = keyInside.trim();
-//         paragraph.id = `${gender}${sanitizedKeyInside}`;
-//         innerDiv.classList.add('my-4')
-//         innerDiv.appendChild(paragraph);
-//         let button = document.createElement('button');
-//         button.innerHTML = `
-//            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-//                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down">
-//                 <path d="m6 9 6 6 6-6"/>
-//               </svg>
-//         `;
-//         // If next level is a list
-//         if (!checkIfLists(data[keyInside])) {
-//             innerDiv.addEventListener('mouseover', () => {
-//                 hoverEffectWithList(innerDiv, data[keyInside], keyInside, gender);
-//             });
-//             innerDiv.addEventListener('mouseout', () => {
-//                 let hoverDiv = document.getElementById('hoverDiv' + innerDiv.id);
-//                 if (hoverDiv && !innerDiv.matches(':hover')) {
-//                     hoverDiv.remove();
-//                 }
-//             });
-//         } else {
-//             // Recursive hover for deeper objects
-//             innerDiv.addEventListener('mouseover', () => {
-//                 HoverEffectWithoutList(innerDiv, data[keyInside], gender);
-//             });
-//             innerDiv.addEventListener('mouseout', () => {
-//                 let hoverDiv = document.getElementById('hoverDiv' + innerDiv.id);
-//                 if (hoverDiv && !innerDiv.matches(':hover')) {
-//                     hoverDiv.remove();
-//                 }
-//             });
-//         }
-//         innerDiv.appendChild(button);
-//         divForInside.appendChild(innerDiv);
-//     });
-
-//     element.appendChild(divForInside);
-// };
-
 
 //Clicking
 const DisplayList = (list, key, gender, prev) => {
+    console.log(prev)
     const element = document.getElementById("outergrid");
     let divForList = document.createElement('div');
     divForList.classList.add('removeDiv');
@@ -171,7 +62,8 @@ const DisplayList = (list, key, gender, prev) => {
     });
 }
 
-const readDataInsideInside = (data, key, gender) => {
+const readDataInsideInside = (data, key, gender,prev) => {
+    prev=sanitizeKeys(prev);
     const element = document.getElementById("outergrid");
     let divForInside = document.createElement('div');
     divForInside.classList.add('removeDiv1');
@@ -224,7 +116,7 @@ const readDataInsideInside = (data, key, gender) => {
                     return;
                 }
                
-                DisplayList(data[keyInside], `${gender}divInside${sanitizedKeyInside}`, gender, keyInside);
+                DisplayList(data[keyInside], `${gender}divInside${sanitizedKeyInside}`, gender, prev+"_"+keyInside);
             });
         } else {
             submitButton.addEventListener('click', () => {
@@ -246,7 +138,8 @@ const readDataInsideInside = (data, key, gender) => {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                readDataInsideInside(data[keyInside], `${gender}divInside${sanitizedKeyInside}`, gender);
+                
+                readDataInsideInside(data[keyInside], `${gender}divInside${sanitizedKeyInside}`, gender,prev+"_"+keyInside);
             });
         }
     });
@@ -288,14 +181,14 @@ const readDataInside = (data, gender) => {
         
         //End hover effects
         if (!checkIfLists(data[key])) {
-            div.addEventListener('mouseover', () => {
-                hoverEffectWithList(div, data[key],key,gender);
-        });
-        div.addEventListener('mouseout', () => {
-           let element=document.getElementById('hoverDiv'+div.id);
-            if (element && !div.matches(':hover')) {
-                element.remove();
-            }    });
+        //     div.addEventListener('mouseover', () => {
+        //         hoverEffectWithList(div, data[key],key,gender);
+        // });
+        // div.addEventListener('mouseout', () => {
+        //    let element=document.getElementById('hoverDiv'+div.id);
+        //     if (element && !div.matches(':hover')) {
+        //         element.remove();
+        //     }    });
             submitButton.addEventListener('click', () => {
                 let existingDiv = document.getElementById(`divForList${gender}${gender}div${sanitizedKey}`);
                 let divs=document.getElementsByClassName('removeDiv1');
@@ -313,14 +206,14 @@ const readDataInside = (data, gender) => {
                 DisplayList(data[key], `${gender}div${sanitizedKey}`, gender, key);
             });
         } else {
-            div.addEventListener('mouseover', () => {
-                HoverEffectWithoutList(div, data[key], gender);
-            });
-            div.addEventListener('mouseout', () => {
-                let element=document.getElementById('hoverDiv'+div.id);
-                if (element && !div.matches(':hover')) {
-                    element.remove();
-                }    });
+            // div.addEventListener('mouseover', () => {
+            //     HoverEffectWithoutList(div, data[key], gender);
+            // });
+            // div.addEventListener('mouseout', () => {
+            //     let element=document.getElementById('hoverDiv'+div.id);
+            //     if (element && !div.matches(':hover')) {
+            //         element.remove();
+            //     }    });
                 
             submitButton.addEventListener('click', () => {
                 let existingDiv = document.getElementById(`internalDiv${gender}Inside${gender}div${sanitizedKey}`);
@@ -336,7 +229,7 @@ const readDataInside = (data, gender) => {
                     existingDiv.classList.toggle('scaledZero');
                     return;
                 }
-                readDataInsideInside(data[key], `${gender}div${sanitizedKey}`, gender);
+                readDataInsideInside(data[key], `${gender}div${sanitizedKey}`, gender,key);
             });
         }
 

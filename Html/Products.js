@@ -117,7 +117,7 @@ SendData();
 
     })
     alert("Items saved successfully! The page will reload now.");
-    location.reload();
+    window.location.href="/";
     }
     catch(error){
         console.error('Error:', error);

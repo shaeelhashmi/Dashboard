@@ -113,6 +113,7 @@ func main() {
 		if os.IsNotExist(err) {
 			w.WriteHeader(http.StatusNotFound)
 			response := map[string]bool{"exists": false}
+			// fmt.Println("Directory:", "../output/"+fileName+"/", "does not exist")
 			json.NewEncoder(w).Encode(response)
 			return
 		}
@@ -121,6 +122,7 @@ func main() {
 			w.WriteHeader(http.StatusNotFound)
 			response := map[string]bool{"exists": false}
 			json.NewEncoder(w).Encode(response)
+			// fmt.Println("Directory:", "../output/"+fileName+"/"+reqData.RealItem+".csv", "does not exist")
 			return
 		}
 		w.WriteHeader(http.StatusOK)
@@ -198,11 +200,12 @@ func main() {
 		if _, err := os.Stat(finalDir); os.IsNotExist(err) {
 			err := os.MkdirAll(finalDir, 0755)
 			if err != nil {
+
 				http.Error(w, "Error creating directory: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
 		}
-		currentTime := time.Now().Format("20060102150405.000")
+		currentTime := time.Now().Format("20060102150405")
 		File, err := os.Create("../selected_outputs/" + FolderName + "/" + reqData.Item + "_" + currentTime + ".csv")
 		if err != nil {
 			http.Error(w, "Error creating file: "+err.Error(), http.StatusInternalServerError)
